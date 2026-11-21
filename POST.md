@@ -1,6 +1,6 @@
 # Grok Heavy 跨账号转移: 洗除旧 GID 并重新绑定目标账号
 
-前三篇 (v1 一次 `g(4)`, v2 延迟首次 sync 番外, v3 两次 `g(4)` 自替换写回) 解决了单账号内的获取与写回问题, 但写回后的订阅受到收据 `obfuscatedAccountId` 的绑定限制, 权限始终固定在原 xAI 账号上. 当持有来自废弃账号的停续旧单 (收据中记录着原持有者的 GID), 而需要将该权益转移至另一个目标账号时, 直接替换会触发 Play 的 `"We are unable to change your subscription plan"` 拒绝.
+前两版及番外 (v1 一次 `g(4)`, v1-番外 延迟首次 sync, v2 两次 `g(4)` 自替换写回) 解决了单账号内的获取与写回问题, 但写回后的订阅受到收据 `obfuscatedAccountId` 的绑定限制, 权限始终固定在原 xAI 账号上. 当持有来自废弃账号的停续旧单 (收据中记录着原持有者的 GID), 而需要将该权益转移至另一个目标账号时, 直接替换会触发 Play 的 `"We are unable to change your subscription plan"` 拒绝.
 
 本文记录如何定位 Play 侧的 GID 校验锁, 通过省略 `accountId` 参数洗除原持有者绑定 (`skipg4`), 再将目标账号 GID 写入新收据 (`destg4`), 以及批量半自动执行过程中的界面与风控处理规则.
 
@@ -59,7 +59,7 @@ if (SKIP_ACCOUNT_ID) {
 
 9 月 4 日使用单张旧单连续完成了 4 次跨账号转移, 当天全程实付 `$0`; 至 9 月 12 日, 40 单规模的转移批次队列全部清空. 账本严格记录来源, 目标与交付状态, 交付前保持 `sold=false`, 已标记售出的目标账号禁止撤回或复用.
 
-脱敏代码位于 GitHub 仓库 `grok-bug-v4-account-hop` (目前为 private), 包含洗白脚本 `skipg4_once.py`, 绑定脚本 `destg4_once.py`, 编排入口 `hop.py`, 对应 Frida hook 以及值守检查文档 `docs/dual-attended-hop.md`.
+脱敏代码位于 GitHub 仓库 `grok-bug-v3-account-hop` (目前为 private), 包含洗白脚本 `skipg4_once.py`, 绑定脚本 `destg4_once.py`, 编排入口 `hop.py`, 对应 Frida hook 以及值守检查文档 `docs/dual-attended-hop.md`.
 
 10 月份 xAI 切换了整套订阅 SKU 体系, 上述三条链路随旧 SKU 一起失效. 下一篇将介绍如何在新 SKU 上重建 `mode 3`, 以及 10 月份的封堵与反制细节.
 

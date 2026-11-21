@@ -1,4 +1,4 @@
-# grok-bug-v4-account-hop
+# grok-bug-v3-account-hop
 
 Sanitized research copy of the mechanism behind the "Grok Heavy leftover hop"
 chain (Google Play Billing, Grok / SuperGrok Heavy `grok.ultra`), built and
@@ -105,7 +105,7 @@ accept no liability for any consequence of use.
 ## 系列
 
 - v1 `grok-bug-v1-deferred-upgrade`: 一次 `g(4)` Lite 一付三 deferred replacement (2026-08)
-- v2 `grok-bug-v2-delayed-sync`: v1 失效后的延迟首次 sync 番外 (2026-09)
-- v3 `grok-bug-v3-double-g4-writeback`: 两次 `g(4)` 停续 leftover 零元写回 (2026-09)
-- v4 本仓库: 基于 v3 的 `skipg4`/`destg4` 跨账号转移 (2026-09)
-- v5 `grok-bug-v5-x-subscription-ultra`: `x.subscription.ultra` 新 SKU `mode 3` 重建 + 墙分类 (2026-10)
+- v1-番外 `grok-bug-v1-extra-delayed-sync`: v1 失效后的延迟首次 sync 番外 (2026-09)
+- v2 `grok-bug-v2-double-g4-writeback`: 两次 `g(4)` 停续 leftover 零元写回 (2026-09)
+- v3 本仓库: 基于 v2 的 `skipg4`/`destg4` 跨账号转移 (2026-09)
+- v4 `grok-bug-v4-x-subscription-ultra`: `x.subscription.ultra` 新 SKU `mode 3` 重建 + 墙分类 (2026-10)
