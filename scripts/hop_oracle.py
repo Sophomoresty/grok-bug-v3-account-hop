@@ -636,7 +636,7 @@ def google_account_recovery(blob: str) -> bool:
     """MinuteMaid Account recovery after 2FA chooser Try another way.
 
     Frozen 2026-09-21 hop-2 acct h2-try-another3.png: Account recovery,
-    Get a verification code at the Play .asia itself. Hotmail may be absent.
+    Get a verification code at the Play <domain> mailbox itself. Hotmail may be absent.
     """
     low = str(blob or "").lower()
     return "account recovery" in low and "verification code" in low
@@ -666,7 +666,7 @@ def google_2fa_chooser_try_another_row(blob: str) -> bool:
 
 
 def google_asia_mail_code(payload: dict[str, Any] | None) -> str:
-    """Play .asia 谷歌验证码 panel /api/fetch JSON.
+    """Play recovery mailbox 谷歌验证码 panel /api/fetch JSON.
 
     Frozen 2026-09-21 hop-2 play-acct h2-code-filled.png code <otp>,
     hop-3 play-acct h3-send-code.png then <otp>. Clash fake-ip 198.18
@@ -950,7 +950,7 @@ def cancel_server_error_dialog(blob: str) -> bool:
 def cancel_no_internet_dialog(blob: str) -> bool:
     """Play Error sheet on Manage subscription: No internet connection + OK.
 
-    2026-09-29 hop-1 maeva cancel.png. cancel_grok dumped that sheet until
+    2026-09-29 hop-1 acct cancel.png. cancel_grok dumped that sheet until
     kind None while Heavy was already active. Dismiss OK and keep canceling.
     A canceled page with Resubscribe is not this sheet.
     """
@@ -1374,7 +1374,7 @@ def destg4_already_active_action(
 def destg4_before_skipg4(grpc_status: int | None, dest_already: bool) -> str:
     """Dead dest JWT must refresh. It must not fall through to skipg4.
 
-    Frozen 2026-09-27 fcjc: grpc 16 made has_ultra_active false while Play
+    Frozen 2026-09-27 acct: grpc 16 made has_ultra_active false while Play
     still held the washed token with obf set, and destg4_once printed
     need_skipg4. After dest_login the same token was ACTIVE and capped.
     """
@@ -1388,7 +1388,7 @@ def skip_retry_active(rows: list[dict], ultra_by_email: dict[str, bool]) -> list
 
     Frozen 2026-10-08 hop-small-3 last60 gap 1336s: ingest 21:26:46 then
     21:49:02. dest_jwt_grpc_16 after dest_login of another dest, plus
-    4359 Verification needed bind <last4>. GET-inactive stays skipped.
+    <last4> Verification needed bind <last4>. GET-inactive stays skipped.
     """
     out: list[str] = []
     for row in rows or []:
@@ -1920,7 +1920,7 @@ def hop_ledger_sold_dest_policy(*, leftover_has_ultra_active: object, dest_sold:
     """Sold dests stay sold. Do not unmark_sold.
 
     leftover GET already INACTIVE -> cannot_transfer dest empty.
-    leftover still ACTIVE -> hop onto a new unsold dest (2026-09-22 tyron).
+    leftover still ACTIVE -> hop onto a new unsold dest (2026-09-22 acct).
     """
     if not dest_sold:
         return "keep_dest"
@@ -1940,7 +1940,7 @@ def hop_ledger_close_action(
 
     grpc 16 is unusable SSO, not ultra-false. dest_login then GET
     (`pending` `sso_refresh_then_get` dest empty). Do not cannot_transfer.
-    leftover INACTIVE and dest empty (mariska) is cannot_transfer.
+    leftover INACTIVE and dest empty (acct) is cannot_transfer.
     Frozen hop-923: three accts' first GET grpc 16 was a
     mistyped JWT; sqlite/operator JWT GET ok True ultra False grpc None.
     """
@@ -1959,7 +1959,7 @@ def hop_ledger_ok(rows: list[dict[str, Any]] | None) -> bool | str:
     leftover GET already INACTIVE must be cannot_transfer with dest empty.
     Transferred dests must be unique. Do not reuse another leftover's dest.
     ingest row dest_sold / dest_inventory=dropped / dest_has_ultra_active
-    False is not ok (hop-923 marcus apiwjzxaslf dropped; sold overlay).
+    False is not ok (hop-923 acct dropped; sold overlay).
     """
     if not isinstance(rows, list) or not rows:
         return "ledger_empty"

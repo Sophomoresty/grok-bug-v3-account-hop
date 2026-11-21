@@ -1,8 +1,7 @@
 <!-- Sanitized research copy. Ops/account/card/egress specifics removed. -->
-<!-- Source: grok-heavy-pixel/workflows/dual-attended-hop.md (2026-09/10).
-     Mechanism, gate rules and coordinates preserved; account emails, token
+<!-- Mechanism, gate rules and coordinates preserved; account emails, token
      prefixes, card last4/BINs/issuers, egress nodes and device ports are
-     placeholders. Pure per-account run ledgers are omitted and marked. -->
+     placeholders. Pure per-account run ledgers are omitted. -->
 
 # 多机有人值守 leftover hop
 

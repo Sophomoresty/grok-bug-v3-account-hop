@@ -38,10 +38,15 @@ for _name in (
             ),
         )
 
+class _DeviceStub:
+    def __getattr__(self, attr: str):
+        raise NotImplementedError(f"device.{attr}: not shipped in this research copy")
+
+
 try:
     import device  # noqa: E402  (adb / uiautomator / OCR layer; not shipped)
 except ImportError:
-    device = None  # research-copy stub; mechanism call sites kept verbatim
+    device = _DeviceStub()  # research-copy stub; fails loud on call
 
 
 # ---- # ops removed: account-pool / sold-ledger (grok_hotmail_pool) is not
@@ -77,47 +82,6 @@ def ingest_hop_dest(dest: str, prev: str, claimed_by: str = "leftover-hop") -> d
         }
     )
     return {"ok": True, "stub": "local_json"}
-
-
-def jwt_of(email: str) -> str:
-    """# ops removed: pool sqlite sso_jwt lookup. SSO JWT comes from the SSO_JWT
-    env var for the account named by HOP_DEST / HOP_OLD."""
-    dest = str(email or "").strip().lower()
-    env_dest = (os.environ.get("HOP_DEST") or "").split(",")
-    if dest and dest in [e.strip().lower() for e in env_dest if e.strip()]:
-        return os.environ.get("SSO_JWT") or ""
-    if dest and dest == (os.environ.get("HOP_OLD") or "").strip().lower():
-        return os.environ.get("SSO_JWT") or ""
-    return ""
-
-
-def sso_other_holder(email: str, jwt: str = "") -> str:
-    """# ops removed: pool cross-account JWT index is not shipped.
-
-    Single-JWT env stub cannot hold another account, so this returns ''.
-    The original queried `SELECT email FROM accounts WHERE sso_jwt=? AND
-    lower(email)!=? LIMIT 1` to catch a shared/串号 SSO.
-    """
-    return ""
-
-
-def persist_jwt(email: str, jwt: str) -> None:
-    """# ops removed: pool UPDATE. Refreshed JWTs are logged locally."""
-    if not str(jwt or "").startswith("eyJ"):
-        return
-    _log_write({"persist_jwt": str(email or "").strip().lower(), "t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
-
-
-def stamp_xai_login_ok(email: str) -> None:
-    """# ops removed: pool notes UPDATE. Recorded locally."""
-    if not str(email or "").strip():
-        return
-    _log_write({"xai_login_ok": str(email).strip().lower(), "t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
-
-
-def dest_pool_row(email: str) -> dict:
-    """# ops removed: pool row lookup (password / xai_password / notes)."""
-    return {}
 
 
 GOOGLE_PW = os.environ.get("GOOGLE_PW") or os.environ.get("HOP_GOOGLE_PW") or ""
@@ -203,17 +167,20 @@ def log(*a):
 def open_hotmail_sqlite():
     """# ops removed: the real account pool is not shipped.
 
-    Stand-in: an in-memory sqlite with the same `accounts(email, sso_jwt)`
-    shape, seeded from the HOP_JWT_MAP env var (JSON {email: jwt}). The
-    jwt_of / sso_other_holder queries below run unchanged against it.
+    Stand-in: an in-memory sqlite with the same `accounts` schema,
+    seeded from the HOP_JWT_MAP env var (JSON {email: jwt}).
     """
     import sqlite3
 
     con = sqlite3.connect(":memory:")
-    con.execute("CREATE TABLE accounts (email TEXT PRIMARY KEY, sso_jwt TEXT)")
+    con.row_factory = sqlite3.Row
+    con.execute(
+        "CREATE TABLE accounts (email TEXT PRIMARY KEY, sso_jwt TEXT, has_sso INTEGER DEFAULT 0, notes TEXT DEFAULT '', updated_at TEXT)"
+    )
     seed = json.loads(os.environ.get("HOP_JWT_MAP", "{}"))
     for mail, tok in seed.items():
-        con.execute("INSERT INTO accounts VALUES (?, ?)", (mail, tok))
+        con.execute("INSERT INTO accounts (email, sso_jwt, has_sso) VALUES (?, ?, 1)", (mail, tok))
+    con.commit()
     return con
 
 
@@ -224,7 +191,14 @@ def jwt_of(email: str) -> str:
         row = con.execute("SELECT sso_jwt FROM accounts WHERE lower(email)=?", (dest,)).fetchone()
     finally:
         con.close()
-    return row[0] if row else ""
+    if row and row[0]:
+        return str(row[0])
+    env_dest = (os.environ.get("HOP_DEST") or "").split(",")
+    if dest and dest in [e.strip().lower() for e in env_dest if e.strip()]:
+        return os.environ.get("SSO_JWT") or ""
+    if dest and dest == (os.environ.get("HOP_OLD") or "").strip().lower():
+        return os.environ.get("SSO_JWT") or ""
+    return ""
 
 
 def sso_other_holder(email: str, jwt: str = "") -> str:
@@ -276,7 +250,7 @@ def _library_sqlite(sql: str) -> str:
     2026-10-05 acct play-acct: stdin `select count(*) from ownership` returned
     11 and the su wrapper exited 1 with an empty body. sync_play_library
     treated that as no grok.ultra row and pm-cleared vending, then sat on
-    Play onboard, even though the same db already held tok ekbfgfoc.
+    Play onboard, even though the same db already held tok <tok8>.
     """
     text = sql if sql.endswith("\n") else sql + "\n"
     return (
@@ -745,7 +719,7 @@ def buy(cmd: str, arg: str | None = None) -> dict:
         if ho.after_skipg4_overlay(blob) == "play_points_not_now" or "play points" in blob.lower():
             log("destg4 play_points after subscribe")
             dismiss_play_points()
-    ver = billing.verify_google_password(os.environ.get("HOP_GOOGLE_PW") or "", timeout=45.0)
+    ver = billing.verify_google_password(GOOGLE_PW, timeout=45.0)
     billing.dismiss_pay_sheets()
     log("verify", cmd, ver.get("kind"), ver.get("ok"))
     # timeout_continue / still_wall: 墙关了或还停在 Subscribe, 都不是买成.

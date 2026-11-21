@@ -1,11 +1,10 @@
 <!-- Sanitized research copy. Ops/account/card/egress specifics removed. -->
-<!-- Source: grok-heavy-pixel/workflows/leftover-hop-dest.md (2026-09/10).
-     Mechanism, gate rules, wall-text classification, coordinates and error
+<!-- Mechanism, gate rules, wall-text classification, coordinates and error
      codes are preserved verbatim where possible. Account emails, purchase
      token prefixes, card last4/BINs/issuers, egress nodes and device ports
      are replaced with placeholders (<acct>, <play>, <tok8>, <last4>, <bin>,
      <card-issuer>, US_EGRESS, $MUMU_SERIAL). Pure per-account run ledgers
-     were omitted; every omission is marked. -->
+     were omitted. -->
 
 # leftover skipg4 洗 GID 再 destg4 跳 dest
 

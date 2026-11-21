@@ -37,10 +37,15 @@ for _name in (
             ),
         )
 
+class _DeviceStub:
+    def __getattr__(self, attr: str):
+        raise NotImplementedError(f"device.{attr}: not shipped in this research copy")
+
+
 try:
     import device  # noqa: E402  (adb / uiautomator / OCR layer; not shipped)
 except ImportError:
-    device = None  # research-copy stub; mechanism call sites kept verbatim
+    device = _DeviceStub()  # research-copy stub; fails loud on call
 
 
 def sold_hop_forbidden(old: str):
@@ -244,7 +249,9 @@ def main() -> int:
             # AR=false ultra, then the next fire can be a deferred wall.
             log("unable_change ack then refire")
             device.tap_text("Got it") or device.su_tap(540, 1836, 0.6)
-            tok = str((ultra or {}).get("tok") or lib_tok or "")
+            tok = str((ultra or {}).get("tok_full") or (ultra or {}).get("tok") or "")
+            if len(tok) < 20 and len(lib_tok or "") >= 20:
+                tok = str(lib_tok)
             if len(tok) >= 20:
                 acked = billing.ack_token(tok, WORK)
                 log("ack", {k: acked.get(k) for k in ("ok", "acked", "error")})

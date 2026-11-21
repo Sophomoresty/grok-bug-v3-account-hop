@@ -1,4 +1,4 @@
-# grok-play-leftover-hop
+# grok-bug-v4-account-hop
 
 Sanitized research copy of the mechanism behind the "Grok Heavy leftover hop"
 chain (Google Play Billing, Grok / SuperGrok Heavy `grok.ultra`), built and
@@ -67,22 +67,26 @@ every stop-condition learned from the 2026-09 runs.
 | `scripts/destg4_once.py` | one-shot destg4: `gid_from_jwt` -> `patch_gid` -> fire -> dest GET -> cancel cap |
 | `scripts/hop_oracle.py` | pure settle rules: wall classification, wash/success verdicts, dest-SSO gates |
 | `scripts/billing_core.py` | trimmed fire/wait_wall/gate/GID layer extracted from the original `billing.py` |
+| `scripts/fire_heavy.py` | frida attach + rpc fire launcher (`inspect`, `skipg4`, `destg4`, ...) |
+| `hooks/package.json` | `frida-java-bridge` dependency manifest (run `npm install` before `frida-compile`) |
 | `hooks/heavy_wall.js` | frida hook: e2 inspect, offer parse, replacement-mode buy, all fire variants |
 | `hooks/dump_gid.js` | frida hook: on-device `GetGoogleObfuscatedId` (1.2.46 R8 path included) |
 | `hooks/ack_27008.js` | frida hook: raw binder `transact(902)` purchase acknowledge |
 | `docs/leftover-hop-dest.md` | the module contract: order, gates, stop conditions (sanitized) |
 | `docs/dual-attended-hop.md` | attended multi-desk operation notes, per-date patches (sanitized) |
 | `docs/leftover-two-kinds.md` | the two kinds of "leftover": delivered-and-canceled vs. empty-ledger |
+| `POST.md` | Chinese technical write-up |
 
 ## Prerequisites / what is NOT here
 
 - Code is published for **reading**, not running. It is not out-of-the-box
   runnable: the adb/uiautomator/OCR device layer (`device.py`), the gRPC GET
-  client (`grpc_subs.py`), the frida launcher (`fire_heavy.py`), the account
-  pool, the card-binding layer and the browser sign-in layer were all removed
-  or stubbed. Every stub raises loudly instead of faking a result.
+  client (`grpc_subs.py`), the cross-process lock (`line_lock.py`), the account
+  pool, the card-binding layer and the browser sign-in layer (`ab_signin.py`)
+  were all removed or stubbed. Every stub raises loudly instead of faking a result.
 - `hooks/*.js` are frida-compile entrypoints (`import Java from
-  'frida-java-bridge'`); compiled bundles and `node_modules` are not shipped.
+  'frida-java-bridge'`); run `npm install` inside `hooks/` before compiling,
+  as compiled bundles and `node_modules` are not shipped.
 - Card / account / proxy specifics are removed. Values come from environment
   variables where the mechanism needs them (`SSO_JWT`, `HOP_DEST`, `HOP_OLD`,
   `GOOGLE_PW`, `CARD_LAST4`-style `HOP_PAY_LAST4`/`HOP_AVOID_LAST4`,
@@ -100,7 +104,8 @@ accept no liability for any consequence of use.
 
 ## 系列
 
-- v1 `grok-play-deferred-upgrade`: Lite 一付三 deferred replacement (2026-08)
-- v2 `grok-play-leftover-writeback`: 停续 leftover 的 $0 写回 (2026-09)
-- v3 本仓库: skipg4/destg4, leftover 跨账号转移 (2026-09)
-- v4 `grok-x-subscription-ultra`: 新 SKU mode3 换购 + 墙分类 (2026-10)
+- v1 `grok-bug-v1-deferred-upgrade`: 一次 `g(4)` Lite 一付三 deferred replacement (2026-08)
+- v2 `grok-bug-v2-delayed-sync`: v1 失效后的延迟首次 sync 番外 (2026-09)
+- v3 `grok-bug-v3-double-g4-writeback`: 两次 `g(4)` 停续 leftover 零元写回 (2026-09)
+- v4 本仓库: 基于 v3 的 `skipg4`/`destg4` 跨账号转移 (2026-09)
+- v5 `grok-bug-v5-x-subscription-ultra`: `x.subscription.ultra` 新 SKU `mode 3` 重建 + 墙分类 (2026-10)

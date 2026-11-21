@@ -26,7 +26,7 @@ ARG = sys.argv[2] if len(sys.argv) > 2 else ""
 CMDS_WITH_ARG = {
     "destg4", "destg4p1m", "firstg4extras", "hopprofile", "hopxtid",
     "hopxtidonly", "hopoldidonly", "hopoldidtok", "hopprofilealign",
-    "destfromlite", "ultranogid", "destp1m",
+    "destfromlite",
 }
 
 
@@ -55,7 +55,11 @@ def main() -> None:
     script = session.create_script(js)
     script.on("message", lambda m, d: print("MSG", m.get("payload") or m, flush=True))
     script.load()
-    fn = getattr(script.exports_sync, CMD)
+    fn = getattr(script.exports_sync, CMD, None)
+    if fn is None:
+        print(json.dumps({"ok": False, "err": f"unknown_cmd:{CMD}"}))
+        session.detach()
+        sys.exit(2)
     box = fn(ARG) if CMD in CMDS_WITH_ARG and ARG else fn()
     print(json.dumps(box, ensure_ascii=False, default=str))
     time.sleep(1.2)

@@ -1,5 +1,6 @@
 __pycache__/
 *.pyc
 work/
+node_modules/
 *.png
 .DS_Store

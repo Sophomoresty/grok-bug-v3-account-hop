@@ -36,10 +36,15 @@ for _name in (
             ),
         )
 
+class _DeviceStub:
+    def __getattr__(self, attr: str):
+        raise NotImplementedError(f"device.{attr}: not shipped in this research copy")
+
+
 try:
     import device  # noqa: E402  (adb / uiautomator / OCR layer; not shipped)
 except ImportError:
-    device = None  # research-copy stub; mechanism call sites kept verbatim
+    device = _DeviceStub()  # research-copy stub; fails loud on call
 
 
 class _GrpcSubsStub:

@@ -1,0 +1,11 @@
+{
+  "name": "grok-bug-v4-account-hop-hooks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sanitized research copy. Frida hooks for Grok Google Play leftover hop (skipg4/destg4) research.",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "frida-java-bridge": "^7.0.13"
+  }
+}
