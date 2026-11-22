@@ -1,6 +1,6 @@
-# Grok Heavy 跨账号转移: 洗除旧 GID 并重新绑定目标账号
+# 一张单养活全号池: 揭秘 Grok 速刷号的 $0 跨号转移原理
 
-前两版及番外 (v1 一次 `g(4)`, v1-番外 延迟首次 sync, v2 两次 `g(4)` 自替换写回) 解决了单账号内的获取与写回问题, 但写回后的订阅受到收据 `obfuscatedAccountId` 的绑定限制, 权限始终固定在原 xAI 账号上. 当持有来自废弃账号的停续旧单 (收据中记录着原持有者的 GID), 而需要将该权益转移至另一个目标账号时, 直接替换会触发 Play 的 `"We are unable to change your subscription plan"` 拒绝.
+前两篇 (v1 一次 `g(4)`, v2 两次 `g(4)` 自替换写回) 解决了单账号内的获取与写回问题, 但写回后的订阅受到收据 `obfuscatedAccountId` 的绑定限制, 权限始终固定在原 xAI 账号上. 当持有来自废弃账号的停续旧单 (收据中记录着原持有者的 GID), 而需要将该权益转移至另一个目标账号时, 直接替换会触发 Play 的 `"We are unable to change your subscription plan"` 拒绝.
 
 本文记录如何定位 Play 侧的 GID 校验锁, 通过省略 `accountId` 参数洗除原持有者绑定 (`skipg4`), 再将目标账号 GID 写入新收据 (`destg4`), 以及批量半自动执行过程中的界面与风控处理规则.
 
