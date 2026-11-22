@@ -59,7 +59,7 @@ if (SKIP_ACCOUNT_ID) {
 
 9 月 4 日使用单张旧单连续完成了 4 次跨账号转移, 当天全程实付 `$0`; 至 9 月 12 日, 40 单规模的转移批次队列全部清空. 账本严格记录来源, 目标与交付状态, 交付前保持 `sold=false`, 已标记售出的目标账号禁止撤回或复用.
 
-脱敏代码位于 GitHub 仓库 `grok-bug-v3-account-hop` (目前为 private), 包含洗白脚本 `skipg4_once.py`, 绑定脚本 `destg4_once.py`, 编排入口 `hop.py`, 对应 Frida hook 以及值守检查文档 `docs/dual-attended-hop.md`.
+脱敏代码位于 GitHub 仓库 [https://github.com/Sophomoresty/grok-bug-v3-account-hop](https://github.com/Sophomoresty/grok-bug-v3-account-hop), 包含洗白脚本 `skipg4_once.py`, 绑定脚本 `destg4_once.py`, 编排入口 `hop.py`, 对应 Frida hook 以及值守检查文档 `docs/dual-attended-hop.md`.
 
 10 月份 xAI 切换了整套订阅 SKU 体系, 上述三条链路随旧 SKU 一起失效. 下一篇将介绍如何在新 SKU 上重建 `mode 3`, 以及 10 月份的封堵与反制细节.
 
